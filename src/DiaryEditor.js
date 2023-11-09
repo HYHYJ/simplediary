@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-const DiaryEditor = () => {
+const DiaryEditor = ({ onCreate }) => {
   /* 인풋에 접근할 수 있는 기능 */
   const authorInput = useRef();
   const contentInput = useRef();
@@ -32,8 +32,14 @@ const DiaryEditor = () => {
       contentInput.current.focus();
       return;
     }
-
+    onCreate(state.author, state.content, state.emotion);
     alert("저장 성공");
+    // 저장에 성공하면 기본값이 초기화된다.
+    setState({
+      author: "",
+      content: "",
+      emotion: 1,
+    });
   };
   return (
     <div className="DiaryEditor">
