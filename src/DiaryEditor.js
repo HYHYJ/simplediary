@@ -4,12 +4,24 @@ const DiaryEditor = () => {
   const [state, setState] = useState({
     author: "",
     content: "",
+    emotion: 1,
   });
   // const [author, setAuthor] = useState("");
   // const [content, setContent] = useState("");
   const handleChangeState = (e) => {
-    console.log(e.target.value);
-    console.log(e.target.name);
+    // console.log(e.target.value);
+    // console.log(e.target.name);
+
+    setState({
+      ...state,
+      //useState 변수랑 이름 똑같이해야 변수 변경
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    console.log(state);
+    alert("저장 성공");
   };
   return (
     <div className="DiaryEditor">
@@ -19,26 +31,31 @@ const DiaryEditor = () => {
           name="author"
           value={state.author} /* state의 이름 */
           /* 콜백함수 */
-          onChange={(e) => {
-            /* e = 우리가 움직였을때 input 값이 바뀌었을때 수행한다. */
-            setState({
-              /* 객채를 바꿀려면 새로운 객체를 전달해줘야한다. */
-              ...state,
-              author: e.target.value,
-            });
-          }}
+          onChange={handleChangeState}
         />
       </div>
       <div>
         <textarea
+          name="content"
           value={state.content}
-          onChange={(e) => {
-            setState({
-              ...state,
-              content: e.target.value,
-            });
-          }}
+          onChange={handleChangeState}
         />
+      </div>
+      <div>
+        <select
+          name="emotion"
+          value={state.emotion}
+          onChange={handleChangeState}
+        >
+          <option value={1}>1</option>
+          <option value={2}>2</option>
+          <option value={3}>3</option>
+          <option value={4}>4</option>
+          <option value={5}>5</option>
+        </select>
+      </div>
+      <div>
+        <button onClick={handleSubmit}>일기 저장</button>
       </div>
     </div>
   );
