@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const DiaryEditor = () => {
+  /* 인풋에 접근할 수 있는 기능 */
+  const authorInput = useRef();
+  const contentInput = useRef();
+
   const [state, setState] = useState({
     author: "",
     content: "",
     emotion: 1,
   });
-  // const [author, setAuthor] = useState("");
-  // const [content, setContent] = useState("");
-  const handleChangeState = (e) => {
-    // console.log(e.target.value);
-    // console.log(e.target.name);
 
+  const handleChangeState = (e) => {
     setState({
       ...state,
       //useState 변수랑 이름 똑같이해야 변수 변경
@@ -20,7 +20,19 @@ const DiaryEditor = () => {
   };
 
   const handleSubmit = (e) => {
-    console.log(state);
+    if (state.author.length < 1) {
+      /* alert쓰지말자 */
+
+      //잘못 입력하면 input에 focus
+      authorInput.current.focus();
+      return;
+    }
+    if (state.content.length < 5) {
+      //잘못 입력하면 content에 focus
+      contentInput.current.focus();
+      return;
+    }
+
     alert("저장 성공");
   };
   return (
@@ -28,6 +40,7 @@ const DiaryEditor = () => {
       <h2>오늘의 일기</h2>
       <div>
         <input
+          ref={authorInput} /* 인풋태그에 접근가능 */
           name="author"
           value={state.author} /* state의 이름 */
           /* 콜백함수 */
@@ -36,12 +49,14 @@ const DiaryEditor = () => {
       </div>
       <div>
         <textarea
+          ref={contentInput}
           name="content"
           value={state.content}
           onChange={handleChangeState}
         />
       </div>
       <div>
+        <span>오늘의 감정 점수:</span>
         <select
           name="emotion"
           value={state.emotion}
