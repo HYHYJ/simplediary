@@ -1,6 +1,6 @@
 import DiaryItem from "./DiaryItem";
 
-const DiaryList = ({ onDelete, diaryList }) => {
+const DiaryList = ({ onEdit, onRemove, diaryList }) => {
   console.log(diaryList);
   return (
     <div className="DiaryList">
@@ -12,7 +12,8 @@ const DiaryList = ({ onDelete, diaryList }) => {
           <DiaryItem
             key={it.id}
             {...it}
-            onDelete={onDelete}
+            onRemove={onRemove}
+            onEdit={onEdit}
           /> /* 모든 it의 데이터가 prop으로 들어간다. */
         ))}
       </div>

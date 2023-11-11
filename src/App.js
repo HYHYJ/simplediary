@@ -2,36 +2,13 @@ import { useState, useRef } from "react";
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
-
-// const dummyList = [
-//   {
-//     id: 1,
-//     author: "안녕",
-//     content: "너무 좋다",
-//     emotion: 3,
-//     created_date: new Date().getTime(), //현재시간을 기준으로
-//   },
-//   {
-//     id: 2,
-//     author: "하이",
-//     content: "너무 좋다2",
-//     emotion: 1,
-//     created_date: new Date().getTime(), //현재시간을 기준으로
-//   },
-//   {
-//     id: 3,
-//     author: "봉쥬르",
-//     content: "너무 좋다3",
-//     emotion: 2,
-//     created_date: new Date().getTime(), //현재시간을 기준으로
-//   },
-
-// ];
+import Lifecycle from "./Lifecycle";
 
 function App() {
   const [data, setData] = useState([]);
   // 변수처럼 사용
   const dataId = useRef(0);
+
   //새로운 데이터를 추기하는 함수
   const onCreate = (author, content, emotion) => {
     const created_date = new Date().getTime();
@@ -46,17 +23,29 @@ function App() {
     dataId.current += 1;
     setData([newItem, ...data]);
   };
-  const onDelete = (targetId) => {
+
+  const onRemove = (targetId) => {
     console.log(`${targetId} 가 삭제되었습니다.`);
     //filter로 제외해서 새로운 배열
     const newDiaryList = data.filter((it) => it.id !== targetId);
     //setData에 새로운 배열 추가
     setData(newDiaryList);
   };
+  // item의 수정기능을 App에서 !수정되는 아이디와 수정되는 내용
+  const onEdit = (targetId, newContent) => {
+    setData(
+      //  it아이디가 맞으면 content에 새로운 내용을 넣어준다(삼항연산자)
+      data.map((it) =>
+        it.id === targetId ? { ...it, content: newContent } : it
+      )
+    );
+  };
+
   return (
     <div className="App">
+      <Lifecycle />
       <DiaryEditor onCreate={onCreate} />
-      <DiaryList onDelete={onDelete} diaryList={data} />{" "}
+      <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data} />{" "}
       {/* 더미 리스트 프롭스로 전달 */}
     </div>
   );
