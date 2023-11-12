@@ -1,9 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
-
-//https://jsonplaceholder.typicode.com/comments
 
 function App() {
   const [data, setData] = useState([]);
@@ -68,9 +66,31 @@ function App() {
     );
   };
 
+  //일기 감정 분석 함수
+  //⭐useMemo
+  // 이건 함수가 아니라 값이다.
+  const getDiaryAnalysis = useMemo(() => {
+    console.log("일기 분석 시작");
+
+    const goodCount = data.filter((it) => it.emotion >= 3).length;
+    const badCount = data.length - goodCount;
+    const goodRatio = (goodCount / data.length) * 100;
+    //값을 객체로 리턴
+    return { goodCount, badCount, goodRatio };
+    //⭐data 길이가 변하면 업데이트 됨.
+  }, [data.length]);
+
+  //함수를 연산자로 변수로 나누기
+  // ⭐useMemo는 함수로 말고 값으로 사용해야한다.getDiaryAnalysis() (x) =>getDiaryAnalysis
+  const { goodCount, badCount, goodRatio } = getDiaryAnalysis;
+
   return (
     <div className="App">
       <DiaryEditor onCreate={onCreate} />
+      <div>전체 일기 : {data.length}</div>
+      <div>기분 좋은 일기 개수: {goodCount}</div>
+      <div>기분 나쁜 일기 개수: {badCount}</div>
+      <div>기분 좋은 일기 비율: {goodRatio}</div>
       <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data} />{" "}
       {/* 더미 리스트 프롭스로 전달 */}
     </div>
