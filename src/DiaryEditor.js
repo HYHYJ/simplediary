@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import React from "react";
+import { useEffect, useRef, useState } from "react";
 
 const DiaryEditor = ({ onCreate }) => {
   /* 인풋에 접근할 수 있는 기능 */
+
   const authorInput = useRef();
   const contentInput = useRef();
 
@@ -81,4 +83,5 @@ const DiaryEditor = ({ onCreate }) => {
     </div>
   );
 };
-export default DiaryEditor;
+//⭐ 맨마지막에 묶어주기
+export default React.memo(DiaryEditor);

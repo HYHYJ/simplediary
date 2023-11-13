@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
-import OptimizeTest from "./OptimizeTest";
+// import OptimizeTest from "./OptimizeTest";
 
 function App() {
   const [data, setData] = useState([]);
@@ -36,7 +36,8 @@ function App() {
   }, []);
 
   //새로운 데이터를 추기하는 함수
-  const onCreate = (author, content, emotion) => {
+  // ⭐useMemo는 값을 반환하는것이여서 안됨.
+  const onCreate = useCallback((author, content, emotion) => {
     const created_date = new Date().getTime();
     const newItem = {
       author,
@@ -47,24 +48,27 @@ function App() {
       id: dataId.current,
     };
     dataId.current += 1;
-    setData([newItem, ...data]);
-  };
+    //❤️함수형 업데이트: 상태변환 함수에 함수를 넣어준다.
+    // 항상 최신의 값
+    setData((data) => [newItem, ...data]);
+  }, []);
 
-  const onRemove = (targetId) => {
-    //filter로 제외해서 새로운 배열
-    const newDiaryList = data.filter((it) => it.id !== targetId);
-    //setData에 새로운 배열 추가
-    setData(newDiaryList);
-  };
+  //⭐ useCallback으로 최적화
+  const onRemove = useCallback((targetId) => {
+    //⭐setData 파라미터에 최신 데이터라 들어오는 거라 data를 받고 함수를 돌려야함
+    setData((data) => data.filter((it) => it.id !== targetId));
+  }, []);
   // item의 수정기능을 App에서 !수정되는 아이디와 수정되는 내용
-  const onEdit = (targetId, newContent) => {
-    setData(
+
+  const onEdit = useCallback((targetId, newContent) => {
+    //함수형으로 바꿔주기
+    setData((data) =>
       //  it아이디가 맞으면 content에 새로운 내용을 넣어준다(삼항연산자)
       data.map((it) =>
         it.id === targetId ? { ...it, content: newContent } : it
       )
     );
-  };
+  }, []);
 
   //일기 감정 분석 함수
   //⭐useMemo
@@ -84,7 +88,6 @@ function App() {
 
   return (
     <div className="App">
-      <OptimizeTest />
       <DiaryEditor onCreate={onCreate} />
       <div>전체 일기 : {data.length}</div>
       <div>기분 좋은 일기 개수: {goodCount}</div>
