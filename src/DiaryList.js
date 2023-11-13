@@ -1,7 +1,11 @@
+//📌 컨텍스트 import
+import { useContext } from "react";
+import { DiaryStateContext } from "./App";
 import DiaryItem from "./DiaryItem";
 
-const DiaryList = ({ onEdit, onRemove, diaryList }) => {
-  console.log(diaryList);
+const DiaryList = () => {
+  //* 📌 Context 가져오기
+  const diaryList = useContext(DiaryStateContext);
   return (
     <div className="DiaryList">
       <h2>일기 리스트</h2>
@@ -12,8 +16,6 @@ const DiaryList = ({ onEdit, onRemove, diaryList }) => {
           <DiaryItem
             key={it.id}
             {...it}
-            onRemove={onRemove}
-            onEdit={onEdit}
           /> /* 모든 it의 데이터가 prop으로 들어간다. */
         ))}
       </div>

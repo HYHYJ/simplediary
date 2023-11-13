@@ -1,17 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
+//📌 context 함수 이름 import
+import { DiaryDispatchContext } from "./App";
 
-function DiaryItem({
-  onEdit,
-  onRemove,
-  author,
-  content,
-  created_date,
-  emotion,
-  id,
-}) {
-  useEffect(() => {
-    console.log(`${id}번째 아이템 랜더!`);
-  });
+const DiaryItem = ({ author, content, created_date, emotion, id }) => {
+  //📌 useContext로 사용, 비구조 할당으로 불러오기
+  const { onRemove, onEdit } = useContext(DiaryDispatchContext);
   // 수정하고 있는지 수정이 끝났는지.
   const [isEdit, setIsEdit] = useState(false);
   //수정 상태 토글기능
@@ -82,5 +75,5 @@ function DiaryItem({
       )}
     </div>
   );
-}
+};
 export default React.memo(DiaryItem);
