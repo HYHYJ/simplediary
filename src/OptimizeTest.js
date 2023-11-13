@@ -6,12 +6,24 @@ const CounterA = React.memo(({ count }) => {
   });
   return <div>{count}</div>;
 });
-const CounterB = React.memo(({ obj }) => {
+const CounterB = ({ obj }) => {
   useEffect(() => {
     console.log(`counterB : ${obj.count}`);
   });
   return <div>{obj.count}</div>;
-});
+};
+// ⭐객체값을 비교하는 함수
+const areEqual = (prevProps, nextProps) => {
+  // if (prevProps.obj.count === nextProps.obj.count) {
+  //   //true를 전달하면 React.Memo가 동작하지 않는다.
+  //   return true;
+  // }
+  // return false;
+  //⭐간단하게 작성
+  return prevProps.obj.count === nextProps.obj.count;
+};
+// ⭐이렇게 적으면 areEqual함수에 따라서 CounterB 객체는 새로운 값이 기존값과 같으면 리랜더링 되지 않는다.
+const MemoizedCounterB = React.memo(CounterB, areEqual);
 
 const OptimizeTest = () => {
   const [count, setCount] = useState(1);
@@ -28,7 +40,7 @@ const OptimizeTest = () => {
       </div>
       <div>
         <h2>Counter B</h2>
-        <CounterB obj={obj} />
+        <MemoizedCounterB obj={obj} />
 
         <button
           onClick={() =>
