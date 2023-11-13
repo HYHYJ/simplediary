@@ -1,11 +1,40 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useRef, useEffect, useMemo, useCallback, useReducer } from "react";
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
 // import OptimizeTest from "./OptimizeTest";
+//1️⃣ 외부에 reducer함수를 넣는다.
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "INIT": {
+      return action.data;
+    }
+    case "CREATE": {
+      const created_date = new Date().getTime();
+      const newItem = {
+        ...action.data,
+        created_date,
+      };
+      return [newItem, ...state];
+    }
+    case "REMOVE": {
+      return state.filter((it) => it.id !== action.targetId);
+    }
+    case "EDIT": {
+      return state.map((it) =>
+        it.id === action.targetId ? { ...it, content: action.newContent } : it
+      );
+    }
+    default:
+      return state;
+  }
+};
 
 function App() {
-  const [data, setData] = useState([]);
+  //1️⃣ useState 주석처리한다.
+  // const [data, setData] = useState([]);
+  //1️⃣ useReducer
+  const [data, dispatch] = useReducer(reducer, []);
   // 변수처럼 사용
   const dataId = useRef(0);
 
@@ -26,7 +55,10 @@ function App() {
         id: dataId.current++,
       };
     });
-    setData(initData);
+    //1️⃣ dispatch로 바꾸기
+    dispatch({ type: "INIT", data: initData });
+    //1️⃣ 지우기
+    // setData(initData);
   };
 
   //라이프 사이클, 컴포넌트가 생성되면
@@ -38,36 +70,42 @@ function App() {
   //새로운 데이터를 추기하는 함수
   // ⭐useMemo는 값을 반환하는것이여서 안됨.
   const onCreate = useCallback((author, content, emotion) => {
-    const created_date = new Date().getTime();
-    const newItem = {
-      author,
-      content,
-      emotion,
-      created_date,
-      //어떤 돔도 가르키지 않고 0이라는 값을 가지고있다.
-      id: dataId.current,
-    };
+    //1️⃣dispatch 사용
+    dispatch({
+      type: "CREATE",
+      data: { author, content, emotion, id: dataId.current },
+    });
+    //1️⃣ 주석
+    // const created_date = new Date().getTime();
+    // const newItem = {
+    //   author,
+    //   content,
+    //   emotion,
+    //   created_date,
+    //   //어떤 돔도 가르키지 않고 0이라는 값을 가지고있다.
+    //   id: dataId.current,
+    // };
     dataId.current += 1;
     //❤️함수형 업데이트: 상태변환 함수에 함수를 넣어준다.
     // 항상 최신의 값
-    setData((data) => [newItem, ...data]);
+    //1️⃣ 주석
+    // setData((data) => [newItem, ...data]);
   }, []);
 
   //⭐ useCallback으로 최적화
   const onRemove = useCallback((targetId) => {
-    //⭐setData 파라미터에 최신 데이터라 들어오는 거라 data를 받고 함수를 돌려야함
-    setData((data) => data.filter((it) => it.id !== targetId));
+    dispatch({ type: "REMOVE", targetId });
   }, []);
-  // item의 수정기능을 App에서 !수정되는 아이디와 수정되는 내용
 
   const onEdit = useCallback((targetId, newContent) => {
+    dispatch({ type: "EDIT", targetId, newContent });
     //함수형으로 바꿔주기
-    setData((data) =>
-      //  it아이디가 맞으면 content에 새로운 내용을 넣어준다(삼항연산자)
-      data.map((it) =>
-        it.id === targetId ? { ...it, content: newContent } : it
-      )
-    );
+    // setData((data) =>
+    //   //  it아이디가 맞으면 content에 새로운 내용을 넣어준다(삼항연산자)
+    //   data.map((it) =>
+    //     it.id === targetId ? { ...it, content: newContent } : it
+    //   )
+    // );
   }, []);
 
   //일기 감정 분석 함수
